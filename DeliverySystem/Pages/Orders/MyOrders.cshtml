@@ -1,0 +1,47 @@
+﻿@page
+@model MyOrdersModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h2>My Orders</h2>
+
+@if (Model.Deliveries.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order Date</th>
+                <th>Fruit</th>
+                <th>Amount</th>
+                <th>Final Price</th>
+                <th>Delivery Address</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Deliveries)
+            {
+                <tr>
+                    <td>@order.Order.OrderDate.ToShortDateString()</td>
+                    <td>@order.Order.Fruit.Name</td>
+                    <td>@order.Order.Amount</td>
+                    <td>@order.Order.FinalPrice</td>
+                    <td>@order.Order.DeliveryAddress</td>
+                    <td>@(order.Order.IsDelivered ? "Delivered" : "Pending")</td>
+                    <td>
+                        @if (!order.Order.IsDelivered)
+                        {
+                            <a href="tel:@order.Courier.PhoneNumber" class="btn btn-primary">Call Courier</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No orders found.</p>
+}

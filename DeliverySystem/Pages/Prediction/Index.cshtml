@@ -1,0 +1,29 @@
+﻿@page
+@model PredictionModel
+@{
+    ViewData["Title"] = "Prediction";
+}
+
+<h2>Prediction</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Fruit">Select Fruit:</label>
+        <select id="Fruit" asp-for="SelectedFruitId" class="form-control">
+            @foreach (var fruit in Model.Fruits)
+            {
+                <option value="@fruit.Id">@fruit.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Predict</button>
+</form>
+@if (Model.PredictedDate != null)
+{
+    <h3>Predicted Stock Depletion Date: @Model.PredictedDate</h3>
+}
+
+@if (Model.ErrorMessage != null)
+{
+    <h3>@Model.ErrorMessage</h3>
+}

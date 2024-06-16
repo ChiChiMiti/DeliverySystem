@@ -1,0 +1,98 @@
+﻿@page "{id:int}"
+@model DeliverySystem.Pages.PurchaseModel
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@{
+    ViewData["Title"] = "Purchase Fruit";
+    var pricePerUnit = @Model.Fruit?.Price.ToString("F2").Replace(",", ".");
+}
+
+<h2>Purchase @Model.Fruit?.Name</h2>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            Name
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Fruit?.Name
+        </dd>
+        <dt class="col-sm-2">
+            Price
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Fruit?.Price.ToString("C")
+        </dd>
+        <dt class="col-sm-2">
+            Stock
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Fruit?.Stock
+        </dd>
+        <dt class="col-sm-2">
+            Image
+        </dt>
+        <dd class="col-sm-10">
+            <img src="@Model.Fruit?.ImageUrl" alt="@Model.Fruit?.Name" width="100" />
+        </dd>
+    </dl>
+</div>
+
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var state in ViewData.ModelState)
+            {
+                if (state.Value.Errors.Count > 0)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+}
+
+<form method="post">
+    <input type="hidden" asp-for="Order.FruitId" value="@Model.Fruit.Id" />
+    <div class="form-group">
+        <label for="DeliveryAddress">Delivery Address</label>
+        <input type="text" class="form-control" id="DeliveryAddress" name="Order.DeliveryAddress" required />
+        <span asp-validation-for="Order.DeliveryAddress" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Amount">Amount in Kilograms</label>
+        <input type="number" step=".01" class="form-control" id="Amount" name="Order.Amount" min="0" max="@Model.Fruit.Stock" value="0" required oninput="calculatePrice()" />
+        <span asp-validation-for="Order.Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="TotalPrice">Total Price</label>
+        <input type="text" class="form-control" id="TotalPrice" name="Order.TotalPrice" readonly />
+    </div>
+    <button type="submit" class="btn btn-primary">Purchase</button>
+</form>
+
+@section Scripts {
+    <script>
+        const pricePerUnit = parseFloat(@pricePerUnit);
+        const maxStock = parseFloat(@Model.Fruit?.Stock);
+
+        function calculatePrice() {
+            const quantityElement = document.getElementById('Amount');
+            let quantity = parseFloat(quantityElement.value);
+            if (quantity > maxStock) {
+                quantity = maxStock;
+                quantityElement.value = maxStock;
+            }
+            const totalPrice = pricePerUnit * quantity;
+            document.getElementById('TotalPrice').value = totalPrice.toFixed(2);
+        }
+
+        // Initial calculation
+        document.addEventListener('DOMContentLoaded', function () {
+            calculatePrice();
+        });
+    </script>
+}

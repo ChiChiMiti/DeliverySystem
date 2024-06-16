@@ -1,0 +1,80 @@
+﻿@page
+@model DeliverySystem.Pages.Courier.IndexModel
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Courier,Administrator")]
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Courier Dashboard";
+}
+
+<h2>Orders to Deliver</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Fruit</th>
+            <th>Amount</th>
+            <th>Delivery Address</th>
+            <th>Is Delivered</th>
+            <th>Current Courier</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.Fruit.Name</td>
+                <td>@order.Amount</td>
+                <td>@order.DeliveryAddress</td>
+                <td>@order.IsDelivered</td>
+                <td>
+                    @if (order.Delivery != null)
+                    {
+                        @order.Delivery.Courier.UserName
+                        <span>-</span>
+                        @order.Delivery.Courier.PhoneNumber
+                    }
+                    else
+                    {
+                        <span>Unassigned</span>
+                    }
+                </td>
+                <td>
+                    @if (!order.IsDelivered)
+                    {
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <form method="post" asp-page-handler="UpdateCourier" asp-route-id="@order.Id">
+                                <div class="form-group">
+                                    <label for="courierId">Courier</label>
+                                    <select id="courierId" name="courierId" class="form-control" required>
+                                        <option value="">Select Courier</option>
+                                        @foreach (var courier in Model.Couriers)
+                                        {
+                                            @if (order.Delivery != null && order.Delivery.UserId == courier.Id)
+                                            {
+                                                <option value="@courier.Id" selected="selected">@courier.UserName - @courier.PhoneNumber</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                        }
+                        else if (User.IsInRole("Courier"))
+                        {
+                            if (order.Delivery.UserId == UserManager.GetUserId(User))
+                            {
+                                <form method="post" asp-page-handler="MarkAsDelivered" asp-route-id="@order.Id">
+                                    <button type="submit" class="btn btn-success">Mark as Delivered</button>
+                                </form>
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

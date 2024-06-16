@@ -1,0 +1,33 @@
+﻿@page
+@model DeliverySystem.Pages.Admin.CreateModel
+@{
+    ViewData["Title"] = "Create Fruit";
+}
+
+<h2>Create Fruit</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Fruit.Name" class="control-label"></label>
+        <input asp-for="Fruit.Name" class="form-control" />
+        <span asp-validation-for="Fruit.Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Fruit.Price" class="control-label"></label>
+        <input asp-for="Fruit.Price" class="form-control" />
+        <span asp-validation-for="Fruit.Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Fruit.Stock" class="control-label"></label>
+        <input asp-for="Fruit.Stock" class="form-control" />
+        <span asp-validation-for="Fruit.Stock" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Fruit.ImageUrl" class="control-label"></label>
+        <input asp-for="Fruit.ImageUrl" class="form-control" />
+        <span asp-validation-for="Fruit.ImageUrl" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
